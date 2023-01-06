@@ -37,7 +37,9 @@ function chatColumn(isAi, value, uniqueId) {
                             alt="${isAi ? "bot" : "user"}"
                         />
                     </div>
-                    <div class="message" id=${uniqueId}>${value}</div>
+                    <div class="${
+                      isAi ? "dall-e-message" : "message"
+                    }" id=${uniqueId}>${value}</div>
                 </div>
             </div>
         `;
