@@ -24,7 +24,7 @@ app.post("/", async (req, res) => {
     const result = await openai.createImage({
       prompt: prompt,
       n: 1,
-      size: "1024x1024",
+      size: "512x512",
     });
     const url = result.data.data[0].url;
     console.log("url", url);
