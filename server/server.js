@@ -1,26 +1,40 @@
-import { Configuration, OpenAIApi } from "openai";
-import { writeFileSync } from "fs";
+import express from "express";
 import * as dotenv from "dotenv";
+import cors from "cors";
+import { Configuration, OpenAIApi } from "openai";
 
 dotenv.config();
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
 const openai = new OpenAIApi(configuration);
 
-const prompt = "realistic luxury villa in Italy ";
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-const result = await openai.createImage({
-  prompt: prompt,
-  n: 1,
-  size: "1024×1024",
+app.get("/", async (req, res) => {
+  res.status(200).send({ message: "Hello from DALL-E!" });
 });
 
-const url = result.data.data[0].url;
-console.log(url);
+app.post("/", async (req, res) => {
+  try {
+    const prompt = req.body.prompt;
+    console.log("prompt", prompt);
+    const result = await openai.createImage({
+      prompt: prompt,
+      n: 1,
+      size: "1024x1024",
+    });
+    const url = result.data.data[0].url;
+    console.log("url", url);
+    res.status(200).send({ url });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ err });
+  }
+});
 
-const imgResult = await fetch(url);
-const blob = await imgResult.blob();
-const buffer = Buffer.from(await blob.arrayBuffer());
-writeFileSync(`./img/${Date.now()}.png`, buffer);
+app.listen(5000, () => {
+  console.log("Server is running on port 5000");
+});
